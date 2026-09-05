@@ -1,10 +1,7 @@
 import Foundation
 
 enum AppGroup {
-    static let identifier = "group.com.ikira.keyboard"
-    static var defaults: UserDefaults {
-        UserDefaults(suiteName: identifier) ?? .standard
-    }
+    static var defaults: UserDefaults { .standard }
 }
 
 enum SharedKeys {
