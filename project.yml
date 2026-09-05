@@ -1,0 +1,60 @@
+name: iKiraKeyboard
+options:
+  bundleIdPrefix: com.ikira
+  deploymentTarget:
+    iOS: "18.0"
+  createIntermediateGroups: true
+  defaultConfig: Release
+settings:
+  base:
+    SWIFT_VERSION: 5.10
+    TARGETED_DEVICE_FAMILY: "1,2"
+    SUPPORTS_MACCATALYST: NO
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+configs:
+  Debug: debug
+  Release: release
+targets:
+  iKiraKeyboard:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+      - path: Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ikira.keyboard
+        INFOPLIST_FILE: App/Info.plist
+        CODE_SIGN_ENTITLEMENTS: App/iKiraKeyboard.entitlements
+        PRODUCT_NAME: iKiraKeyboard
+        CURRENT_PROJECT_VERSION: 1
+        MARKETING_VERSION: 0.1.0
+    dependencies:
+      - target: KeyboardExtension
+        embed: true
+  KeyboardExtension:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: KeyboardExtension
+      - path: Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ikira.keyboard.KeyboardExtension
+        INFOPLIST_FILE: KeyboardExtension/Info.plist
+        CODE_SIGN_ENTITLEMENTS: KeyboardExtension/KeyboardExtension.entitlements
+        PRODUCT_NAME: iKira Keyboard
+        APPLICATION_EXTENSION_API_ONLY: YES
+        SKIP_INSTALL: YES
+        CURRENT_PROJECT_VERSION: 1
+        MARKETING_VERSION: 0.1.0
+schemes:
+  iKiraKeyboard:
+    build:
+      targets:
+        iKiraKeyboard: all
+        KeyboardExtension: all
+    run:
+      config: Debug
+    archive:
+      config: Release
