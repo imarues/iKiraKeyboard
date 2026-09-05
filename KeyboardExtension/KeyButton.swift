@@ -1,6 +1,6 @@
 import UIKit
 
-final class KeyButton: UIButton {
+class KeyButton: UIButton {
     var onTap: (() -> Void)?
     var onLongPress: (() -> Void)?
     private var longPressTriggered = false
