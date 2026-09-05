@@ -25,10 +25,9 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.ikira.keyboard
         INFOPLIST_FILE: App/Info.plist
-        CODE_SIGN_ENTITLEMENTS: App/iKiraKeyboard.entitlements
         PRODUCT_NAME: iKiraKeyboard
-        CURRENT_PROJECT_VERSION: 1
-        MARKETING_VERSION: 0.1.0
+        CURRENT_PROJECT_VERSION: 2
+        MARKETING_VERSION: 0.1.1
     dependencies:
       - target: KeyboardExtension
         embed: true
@@ -42,12 +41,11 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.ikira.keyboard.KeyboardExtension
         INFOPLIST_FILE: KeyboardExtension/Info.plist
-        CODE_SIGN_ENTITLEMENTS: KeyboardExtension/KeyboardExtension.entitlements
         PRODUCT_NAME: iKira Keyboard
         APPLICATION_EXTENSION_API_ONLY: YES
         SKIP_INSTALL: YES
-        CURRENT_PROJECT_VERSION: 1
-        MARKETING_VERSION: 0.1.0
+        CURRENT_PROJECT_VERSION: 2
+        MARKETING_VERSION: 0.1.1
 schemes:
   iKiraKeyboard:
     build:
