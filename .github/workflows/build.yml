@@ -1,0 +1,78 @@
+name: Build iKira Keyboard
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Validate project files
+        run: |
+          plutil -lint App/Info.plist
+          plutil -lint App/iKiraKeyboard.entitlements
+          plutil -lint KeyboardExtension/Info.plist
+          plutil -lint KeyboardExtension/KeyboardExtension.entitlements
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build unsigned device app
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project iKiraKeyboard.xcodeproj \
+            -scheme iKiraKeyboard \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY='' \
+            build | tee xcodebuild.log
+
+      - name: Package and validate unsigned IPA
+        run: |
+          set -euo pipefail
+          APP_PATH="DerivedData/Build/Products/Release-iphoneos/iKiraKeyboard.app"
+          test -d "$APP_PATH"
+          test -d "$APP_PATH/PlugIns"
+          find "$APP_PATH/PlugIns" -maxdepth 1 -name '*.appex' -print -quit | grep -q .
+          rm -rf Payload iKiraKeyboard-unsigned.ipa
+          mkdir Payload
+          cp -R "$APP_PATH" Payload/
+          /usr/bin/zip -qry iKiraKeyboard-unsigned.ipa Payload
+          /usr/bin/unzip -t iKiraKeyboard-unsigned.ipa
+          /usr/bin/unzip -l iKiraKeyboard-unsigned.ipa | grep -q 'Payload/iKiraKeyboard.app/PlugIns/.*\.appex/'
+          ls -lh iKiraKeyboard-unsigned.ipa
+
+      - name: Upload unsigned IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: iKiraKeyboard-unsigned
+          path: iKiraKeyboard-unsigned.ipa
+          if-no-files-found: error
+
+      - name: Upload build log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcodebuild-log
+          path: xcodebuild.log
+          if-no-files-found: ignore
